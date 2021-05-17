@@ -8,14 +8,15 @@
     [
       "@babel/plugin-transform-runtime",
       {
-        "corejs": false, // npm install --save @babel/runtime 默认值
-        "helpers": true, // 默认值
-        "regenerator": true, // 默认值
+        // "corejs": false, // npm install --save @babel/runtime 默认值
+        // "helpers": true, // 默认值
+        // "regenerator": true, // 默认值
         "useESModules": true // 默认值为false
       }
     ],
     [
-      "@babel/plugin-proposal-class-properties" //  解决Webpack中提示syntax 'classProperties' isn't currently enabled的错误]
+      "@babel/plugin-proposal-class-properties" 
     ]
+    // ["import", {"libraryName": "antd",  "libraryDirectory": "lib", "style": "css"}]
   ]
 }
