@@ -8,6 +8,8 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 // } = require('clean-webpack-plugin');
 // const webpack = require('webpack');
 const isProduction = process.env.NODE_ENV === 'production';
+const lessRegex = /\.less$/;
+const lessModuleRegex = /\.module\.less$/;
 module.exports = {
   entry: './src/index.jsx',
   output: {
@@ -24,7 +26,7 @@ module.exports = {
     extensions: ['.js', '.jsx', '.json', '.css'],
   },
   module: {
-    noParse: /jquery|lodash/,
+    noParse: /jquery/,
     rules: [{
       test: /\.(js|jsx)$/,
       exclude: /node_modules/,
@@ -48,25 +50,48 @@ module.exports = {
         {
           loader: 'css-loader',
           options: {
-            importLoaders: 0, 
+            // modules: true,
+            importLoaders: 0,
+            // modules: true,
+            // camelCase: true,
+            // localIdentName: '[name]_[local]__[hash:base64:5]',
           },
         },
         {
           loader: 'postcss-loader',
           options: {
+            // parser: 'postcss-js',
             plugins: [
               require('autoprefixer'), // eslint-disable-line
             ],
+            // cssModules: {
+            //   enable: true, // 默认为 false，如需使用 css modules 功能，则设为 true
+            //   config: {
+            //     namingPattern: 'module', // 转换模式，取值为 global/module，下文详细说明
+            //     generateScopedName: '[name]__[local]___[hash:base64:5]'
+            //   }
+            // }
           },
         },
+        // {
+        //   loader: 'px2rem-loader',//可以把px单位变成rem单位
+        //   options: {
+        //     remUnit: 75,//在标准设计稿下1rem对应的是75px
+        //     remPrecesion: 8 //计算后的小数精度是8位
+        //   }
+        // },
         {
-          loader: 'px2rem-loader',//可以把px单位变成rem单位
+          loader: 'less-loader',
           options: {
-            remUnit: 75,//在标准设计稿下1rem对应的是75px
-            remPrecesion: 8 //计算后的小数精度是8位
-          }
+            modifyVars: {
+              'primary-color': '#1AB495',
+              'link-color': '#1AB495',
+              'border-radius-base': '4px',
+            },
+            javascriptEnabled: true,
+          },
         },
-        'less-loader',
+        // 'less-loader',
       ],
     },
     {

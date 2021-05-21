@@ -1,110 +1,10 @@
 <!DOCTYPE html>
-<html lang="en" style="font-size: 100px;">
+<html lang="en" >
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Document</title>
-  <style>
-
-.loadingBox {
-  width: 100%;
-  height: 100%;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.1);
-}
-
-.loadEffect {
-  width: 1.333333rem;
-  height: 1.333333rem;
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  z-index: 10;
-  margin: 0 auto;
-  /* margin-top: 100px; */
-  -webkit-transform: translate(-50%, -50%);
-          transform: translate(-50%, -50%);
-}
-
-.loadEffect span {
-  display: inline-block;
-  width: 0.266667rem;
-  height: 0.266667rem;
-  border-radius: 50%;
-  background: lightgreen;
-  position: absolute;
-  -webkit-animation: load 1.04s ease infinite;
-}
-
-@-webkit-keyframes load {
-  0% {
-    -webkit-transform: scale(1.2);
-    opacity: 1;
-  }
-
-  100% {
-    -webkit-transform: scale(0.3);
-    opacity: 0.5;
-  }
-}
-
-.loadEffect span:nth-child(1) {
-  left: 0;
-  top: 50%;
-  margin-top: -0.133333rem;
-  -webkit-animation-delay: 0.13s;
-}
-
-.loadEffect span:nth-child(2) {
-  left: 0.186667rem;
-  top: 0.186667rem;
-  -webkit-animation-delay: 0.26s;
-}
-
-.loadEffect span:nth-child(3) {
-  left: 50%;
-  top: 0;
-  margin-left: -0.133333rem;
-  -webkit-animation-delay: 0.39s;
-}
-
-.loadEffect span:nth-child(4) {
-  top: 0.186667rem;
-  right: 0.186667rem;
-  -webkit-animation-delay: 0.52s;
-}
-
-.loadEffect span:nth-child(5) {
-  right: 0;
-  top: 50%;
-  margin-top: -0.133333rem;
-  -webkit-animation-delay: 0.65s;
-}
-
-.loadEffect span:nth-child(6) {
-  right: 0.186667rem;
-  bottom: 0.186667rem;
-  -webkit-animation-delay: 0.78s;
-}
-
-.loadEffect span:nth-child(7) {
-  bottom: 0;
-  left: 50%;
-  margin-left: -0.133333rem;
-  -webkit-animation-delay: 0.91s;
-}
-
-.loadEffect span:nth-child(8) {
-  bottom: 0.186667rem;
-  left: 0.186667rem;
-  -webkit-animation-delay: 1.04s;
-}
-      </style>
 </head>
 <body>
   <noscript>
@@ -112,29 +12,8 @@
   </noscript>
 
 
-  <div class='loadingBox' id="loadingBoxs">
-    <div class='loadEffect'>
-        <span ></span>
-        <span ></span>
-        <span ></span>
-        <span ></span>
-        <span ></span>
-        <span ></span>
-        <span ></span>
-        <span ></span>
-    </div>
-    </div>
   <div id="root">
 
   </div>
-  <!-- <script
-  src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.15/lodash.min.js"></script>
-  <script src="static-files/react.dll.js"></script> -->
-  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/react/16.10.2/umd/react.production.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/16.10.2/umd/react-dom.production.min.js"></script> -->
-  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/react-router-dom/5.1.2/react-router-dom.min.js"></script> -->
-
-
 </body>
 </html>
