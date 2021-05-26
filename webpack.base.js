@@ -22,6 +22,9 @@ module.exports = {
 
   resolve: {
     extensions: ['.js', '.jsx', '.json', '.css', 'less'],
+    alias: {
+      '@ant-design/icons/lib/dist$': path.resolve(__dirname,'src/components/Icon')
+   }
   },
   module: {
     noParse: /jquery/,
@@ -45,12 +48,12 @@ module.exports = {
             loader: 'postcss-loader'
           }
         ],
-        exclude: [path.resolve(__dirname, '..', 'node_modules')]
+        exclude: /node_modules/
       }, {
         test: /\.(less|css)$/,
         include: /node_modules/,
         use: [
-          'style-loader',
+          isProduction ? MiniCssExtractPlugin.loader : "style-loader",
           {
             loader: 'css-loader',
             options: {
@@ -125,11 +128,6 @@ module.exports = {
       template: './index.html',
       hash: true, // 为了避免缓存，可以在产出的资源后面添加hash值
     }),
-    // new InlineManifestWebpackPlugin(),
-    // new webpack.ProvidePlugin({ // 配置后无需在import和require引入
-    //   _: 'lodash',
-    //   $: 'jquery',
-    // }),
   ],
 
 };

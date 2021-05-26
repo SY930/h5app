@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Form, Input, Button, DatePicker, Select, Row, Col, Table, Switch
+  Form, Table, Switch, message,
 } from 'antd';
-import { IconProvider, SearchOutlined } from '@ant-design/icons';
+// import { SearchOutlined } from '../../components/Icon';
 import * as dayjs from 'dayjs';
 import { fetchData, throttle } from '../../utils';
 import { WECHAT_MALL_ACTIVITIES } from '../../config'
@@ -12,107 +12,9 @@ import styles from './home.less';
 
 
 
-const { RangePicker } = DatePicker;
-const { Option } = Select;
-const columns = [
-  {
-    title: '序号',
-    dataIndex: 'key',
-    align: 'center',
-  },
-  {
-    title: '操作',
-    dataIndex: 'opt',
-    align: 'center',
-    render: text => <a>查看详情</a>,
-  },
-  {
-    title: '启用/暂停',
-    key: 'status',
-    dataIndex: 'status',
-    align: 'center',
-    render: (text, record, index) => {
-      const defaultChecked = (record.isActive == '1' ? true : false);
-      // const statusState = (
-      //     (record.eventWay == '50' || record.eventWay == '53')
-      //     &&
-      //     (record.status != '0' && record.status != '1' && record.status != '5' && record.status != '21')
-      // );
-      return (
-        <Switch
-          // size="small"
-          checkedChildren='启用'
-          unCheckedChildren='暂停'
-        // checked={defaultChecked}
-        // onChange={(e) => {
-        //     if (isBrandOfHuaTianGroupList(this.props.user.accountInfo.groupID) || record.eventWay === 80) {
-        //         e.preventDefault();
-        //         return;
-        //     }
-        //     if (Number(record.eventWay) === 70) {
-        //         message.warning(`${this.props.intl.formatMessage(STRING_SPE.du3bnfobe30180)}`);
-        //         return;
-        //     }
-        //     record.isActive == '-1' || statusState ? null :
-        //         this.handleDisableClickEvent(record.operation, record, index, null, `${this.props.intl.formatMessage(STRING_SPE.db60c8ac0a3831197)}`);
-        // }}
-        // disabled={(record.isActive == '-1' || statusState || isBrandOfHuaTianGroupList(this.props.user.accountInfo.groupID)) || record.eventWay === 80 ? true : false}
-        />
-      )
-    }
-  },
-  {
-    title: '活动类型',
-    dataIndex: 'promotionType',
-    render: (promotionType) => {
-      const text = (WECHAT_MALL_ACTIVITIES.find(({ key }) => key === `${promotionType}`) || {}).title
-      return (<span title={text}>{text}</span>);
-    },
-  },
-  {
-    title: '活动名称',
-    dataIndex: 'promotionName',
-    className: '',
-    // render: text => <a>{text}</a>,
-  },
-  {
-    title: '活动编码',
-    dataIndex: 'promotionCode',
-    className: '',
-    // render: text => <a>{text}</a>,
-  },
-  {
-    title: '有效时间',
-    dataIndex: 'excludedDate',
-    className: '',
-    // render: (validDate, record) => {
-    // return `${moment(record.startTime, 'YYYYMMDDHHmm').format('YYYY-MM-DD')} - ${moment(record.endTime, 'YYYYMMDDHHmm').format('YYYY-MM-DD')}`;
-    // },
-    // render: text => <a>{text}</a>,
-  },
-  {
-    title: '有效状态',
-    dataIndex: 'excludedSubjectLst', // ??
-    className: '',
-    align: 'center',
-  },
-  {
-    title: '创建人/修改人',
-    dataIndex: 'createBy', // ??
-    className: '',
-    render: (text, record) => {
-      return `${text}/${record.modifiedBy}`
-    }
-  },
-  {
-    title: '创建时间/修改时间',
-    dataIndex: 'createTime', // ??
-    className: '',
-    // render: (validDate, record) => {
-    // return `${moment(record.startTime, 'YYYYMMDDHHmm').format('YYYY-MM-DD')} - ${moment(record.endTime, 'YYYYMMDDHHmm').format('YYYY-MM-DD')}`;
-    // },
-  },
-];
+// const { RangePicker } = DatePicker;
+// const { Option } = Select;
+
 
 const datas = [
   {
@@ -140,9 +42,111 @@ const Home = () => {
 
   // const classes = useStyles();
   const [clientWidth, setClintWidth] = useState(1001);
-  const [data, setData] = useState(datas)
+  const [data, setData] = useState(datas);
+  const [total, setTotal] = useState(80);
+  const [pageNo, setPageNo] = useState(1);
+  const [pageSize, setPageSize] = useState(10)
   const [form] = Form.useForm();
+  const handleChangeChecked = (value) => {
 
+    console.log('value: ', value);
+    const v = {
+      groupID: 11157,
+      shopID: 76311842,
+      promotionID: 1111,
+      status: value ? 1 : 0,
+    }
+    fetchData('/crm_h/promotion_updatePromotionStatusByShop.ajax', v)
+      .then((res) => {
+        if (res.code === '000') {
+          message.success('修改成功')
+        }
+      })
+  }
+  // isActive 表示当前店铺的活动启动状态，因ProtoBuf的序列化问题，可能存在isActive=0的时候无此字段，因此当isActive不存在则和isActive=0同含义。
+  // 为空判断
+  const columns = () => ([
+    {
+      title: '序号',
+      dataIndex: 'key',
+      align: 'center',
+    },
+    {
+      title: '启用/暂停',
+      key: 'status',
+      dataIndex: 'status',
+      align: 'center',
+      render: (text, record, index) => {
+        const defaultChecked = (record.isActive == '1' ? true : false);
+        // const statusState = (
+        //     (record.eventWay == '50' || record.eventWay == '53')
+        //     &&
+        //     (record.status != '0' && record.status != '1' && record.status != '5' && record.status != '21')
+        // );
+        return (
+          <Switch
+            // size="small"
+            checkedChildren='启用'
+            unCheckedChildren='暂停'
+            // checked={defaultChecked}
+            onChange={handleChangeChecked}
+          // disabled={(record.isActive == '-1' || statusState || isBrandOfHuaTianGroupList(this.props.user.accountInfo.groupID)) || record.eventWay === 80 ? true : false}
+          />
+        )
+      }
+    },
+    {
+      title: '活动类型',
+      dataIndex: 'promotionType',
+      render: (promotionType) => {
+        const text = (WECHAT_MALL_ACTIVITIES.find(({ key }) => key === `${promotionType}`) || {}).title
+        return (<span title={text}>{text}</span>);
+      },
+    },
+    {
+      title: '活动名称',
+      dataIndex: 'promotionName',
+      className: '',
+      // render: text => <a>{text}</a>,
+    },
+    {
+      title: '活动编码',
+      dataIndex: 'promotionCode',
+      className: '',
+      // render: text => <a>{text}</a>,
+    },
+    {
+      title: '有效时间',
+      dataIndex: 'excludedDate',
+      className: '',
+      // render: (validDate, record) => {
+      // return `${moment(record.startTime, 'YYYYMMDDHHmm').format('YYYY-MM-DD')} - ${moment(record.endTime, 'YYYYMMDDHHmm').format('YYYY-MM-DD')}`;
+      // },
+      // render: text => <a>{text}</a>,
+    },
+    {
+      title: '有效状态',
+      dataIndex: 'excludedSubjectLst', // ??
+      className: '',
+      align: 'center',
+    },
+    // {
+    //   title: '创建人/修改人',
+    //   dataIndex: 'createBy', // ??
+    //   className: '',
+    //   render: (text, record) => {
+    //     return `${text}/${record.modifiedBy}`
+    //   }
+    // },
+    {
+      title: '创建时间/修改时间',
+      dataIndex: 'createTime', // ??
+      className: '',
+      // render: (validDate, record) => {
+      // return `${moment(record.startTime, 'YYYYMMDDHHmm').format('YYYY-MM-DD')} - ${moment(record.endTime, 'YYYYMMDDHHmm').format('YYYY-MM-DD')}`;
+      // },
+    },
+  ]);
 
   const onResize = () => {
     const clientWidth = document.body.clientWidth || document.documentElement.clientWidth;
@@ -152,62 +156,9 @@ const Home = () => {
   };
 
   throttleResize = throttleResize || throttle(onResize, 300, 1000);
-  useEffect(() => {
-    onResize();
-    window.addEventListener('resize', throttleResize, false);
-    return () => {
-      window.removeEventListener('resize', throttleResize, false);
-    };
-  }, [throttleResize]);
 
-
-
-  const onGenderChange = (value) => {
-    switch (value) {
-      case 'male':
-        form.setFieldsValue({
-          type: 'male',
-        });
-        return;
-      case 'female':
-        form.setFieldsValue({
-          type: 'female',
-        });
-        return;
-
-      case 'other':
-        form.setFieldsValue({
-          type: 'other',
-        });
-    }
-  };
-
-  const onStatusChange = (value) => {
-    switch (value) {
-      case 'male':
-        form.setFieldsValue({
-          status: 'male',
-        });
-        return;
-      case 'female':
-        form.setFieldsValue({
-          status: 'female',
-        });
-        return;
-
-      case 'other':
-        form.setFieldsValue({
-          status: 'other',
-        });
-    }
-  };
-
-  const onFinish = (values, ...options) => {
-    console.log('options: ', options);
-    // console.log(useRequest);
-    console.log(dayjs(new Date()).format('YYYYMMDDHHmmss'));
+  const getTableData = () => {
     const v = {
-      ...values,
       groupID: 11157,
       shopID: 76311842,
       timestamp: dayjs(new Date()).format('YYYYMMDDHHmmss'),
@@ -216,22 +167,70 @@ const Home = () => {
       sign: '1dd7ef30e37030fcb5eeb3cbec90df5',
     }
     fetchData('/crm_h/promotion_updatePromotionStatusByShop.ajax?devKey=hualala', v)
-    .then((res) => {
-      if (res.promotionLst && res.promotionLst.length > 0) {
-        setData([]);
-      } else {
-        // setData([]);
-      }
-    })
-    .catch((err) => {console.log(err)});
-    // console.log('options: ', options);
+      .then((res) => {
+        const data = { promotionLst: [], ...res.data };
+        const pageObj = { pageNo: +data.pageNo, total: +data.totalSize };
+        if (data.promotionLst && data.promotionLst.length > 0) {
+          setData(data.promotionLst);
+          setTotal(pageObj.total);
+          setPageSize(data.pageNo);
+        } else {
+          // setData([]);
+        }
+      })
+      .catch((err) => { console.log(err) });
+  }
 
-  };
+  useEffect(() => {
+    onResize();
+    window.addEventListener('resize', throttleResize, false);
+    return () => {
+      window.removeEventListener('resize', throttleResize, false);
+    };
+  }, [throttleResize]);
+
+  useEffect(() => {
+    getTableData()
+  }, [pageNo, pageSize])
+
+  const handleChangePage = (currentPage, curPageSize) => {
+    console.log('currentPage, pageSize: ', currentPage, pageSize);
+    if (currentPage !== pageNo || pageSize !== curPageSize ) {
+      setPageNo(currentPage);
+      setPageSize(curPageSize)
+    }
+
+  }
+
+  // const onGenderChange = (value) => {
+  //   switch (value) {
+  //     case 'male':
+  //       form.setFieldsValue({
+  //         type: 'male',
+  //       });
+  //       return;
+  //     case 'female':
+  //       form.setFieldsValue({
+  //         type: 'female',
+  //       });
+  //       return;
+
+  //     case 'other':
+  //       form.setFieldsValue({
+  //         type: 'other',
+  //       });
+  //   }
+  // };
+  // const onFinish = (values, ...options) => {
+  //   console.log('options: ', options);
+  //   // console.log(useRequest);
+  //   console.log(dayjs(new Date()).format('YYYYMMDDHHmmss'));
+  // };
   return (
     <div className={styles.homeBox}>
       {/* <div className="home-box"> */}
       <div className={[styles.titleBox, styles.line].join(' ')}><h2 className="title">基础营销设置</h2></div>
-      {
+      {/* {
         clientWidth <= 992 && clientWidth >= 768 ? (
           <>
             <Row>
@@ -249,8 +248,6 @@ const Home = () => {
                   <Form.Item
                     name="activeTime"
                     label="活动时间"
-
-                  // wrapperCol={{ span: 16 }}
                   >
                     <RangePicker />
                   </Form.Item>
@@ -259,11 +256,9 @@ const Home = () => {
                   <Form.Item
                     name="activeType"
                     label="活动类型"
-                  // {...formItemLayout}
                   >
                     <Select
                       onChange={onGenderChange}
-                    // allowClear
                     >
                       <Option value="all">全部</Option>
                       <Option value="male">加价升级换新</Option>
@@ -276,11 +271,9 @@ const Home = () => {
                   <Form.Item
                     name="status"
                     label="使用状态"
-                  // {...formItemLayout}
                   >
                     <Select
                       onChange={onStatusChange}
-                    // allowClear
                     >
                       <Option value="all">全部</Option>
                       <Option value="male">male</Option>
@@ -297,7 +290,6 @@ const Home = () => {
                         type="primary"
                         htmlType="submit"
                         disabled={
-                          // !form.isFieldsTouched(true) ||
                           !!form.getFieldsError().filter(({ errors }) => errors.length).length
                         }
                       >
@@ -308,7 +300,6 @@ const Home = () => {
                 </Col>
                 <div className={styles.line} style={{ width: '100%' }}>
                   <Row className={styles.mdName}>
-                    {/* <Form className={styles.formBox} form={formName} layout="inline" > */}
                     <Col md={9}>
                       <Form.Item
                         name="name"
@@ -320,7 +311,6 @@ const Home = () => {
                         />
                       </Form.Item>
                     </Col>
-                    {/* </Form> */}
                   </Row>
                 </div>
               </Form>
@@ -333,7 +323,6 @@ const Home = () => {
                 <Form.Item
                   name="activeTime"
                   label="活动时间"
-                // wrapperCol={{ span: 16 }}
                 >
                   <RangePicker />
                 </Form.Item>
@@ -342,11 +331,9 @@ const Home = () => {
                 <Form.Item
                   name="activeType"
                   label="活动类型"
-                // {...formItemLayout}
                 >
                   <Select
                     onChange={onGenderChange}
-                  // allowClear
                   >
                     <Option value="all">全部</Option>
                     <Option value="male">加价升级换新</Option>
@@ -359,11 +346,9 @@ const Home = () => {
                 <Form.Item
                   name="status"
                   label="使用状态"
-                // {...formItemLayout}
                 >
                   <Select
                     onChange={onStatusChange}
-                  // allowClear
                   >
                     <Option value="all">全部</Option>
                     <Option value="male">male</Option>
@@ -391,7 +376,6 @@ const Home = () => {
                       type="primary"
                       htmlType="submit"
                       disabled={
-                        // !form.isFieldsTouched(true) ||
                         !!form.getFieldsError().filter(({ errors }) => errors.length).length
                       }
                     >
@@ -403,18 +387,23 @@ const Home = () => {
             </Form>
           </Row>
         )
-      }
+      } */}
       <div className={styles.tableBox}>
         <Table
-          columns={columns}
+          columns={columns()}
           dataSource={data}
           rowKey="key"
           pagination={{
+            pageSize,
+            pageNo,
             showSizeChanger: true,
             showQuickJumper: true,
-            total: '85',
+            total,
             showTotal: (total, range) => `本页${range[0]}-${range[1]}/ 共 ${total}条`,
             position: ['none', 'bottomLeft'],
+            onChange: (page, pageSize) => {
+              handleChangePage(page, pageSize)
+            },
           }}
           bordered
           scroll={{ x: 1800 }}

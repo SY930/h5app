@@ -86,7 +86,7 @@ const fetchData = (url, options = {}) => {
             .then(result => {
                 console.log('result: ', result);
                 if (result.code === '000') {
-                    resolve(result.data);
+                    resolve(result);
                 } else {
                     Modal.error({
                         title: '啊哦！好像有问题呦~~',

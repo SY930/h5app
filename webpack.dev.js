@@ -1,17 +1,18 @@
 const path = require('path');
+const webpack = require('webpack');
 const {
   smart,
 } = require('webpack-merge');
 const SpeedMeasureWebpackPlugin = require('speed-measure-webpack-plugin'); // 费时分析
-// const {
-//   BundleAnalyzerPlugin,
-// } = require('webpack-bundle-analyzer'); // 生成代码分析报告，帮助提升代码质量和网站性能
+const {
+  BundleAnalyzerPlugin,
+} = require('webpack-bundle-analyzer'); // 生成代码分析报告，帮助提升代码质量和网站性能
 // const DllReferencePlugin = require('webpack/lib/DllReferencePlugin');
 const base = require('./webpack.base');
 
 const smw = new SpeedMeasureWebpackPlugin();
 module.exports = smw.wrap(smart(base, {
-  devtool: 'cheap-module-eval-source-map',
+  // devtool: 'cheap-module-eval-source-map',
   mode: 'development',
   watch: true,
   watchOptions: {
@@ -45,8 +46,6 @@ module.exports = smw.wrap(smart(base, {
     // 缓存已解决的依赖项, 避免重新解析它们。
     // unsafeCache: true,
     rules: [{
-      // url-loader的引入路径拼接是以output.publicPath+url-loader.publicPath+url-loader.name
-      // 当我们是一个单页面应用的时候,我们很可能会将output.public定义为/(根目录),然后直接利用url-loader.name做文章.这样可以既省去url-loader的publicPath,还能省去url-loader的outputPath
       test: /\.(gif|png|jpe?g|svg|bmp)$/,
       use: [{
         loader: 'url-loader', // 该loader内置了file-loader
@@ -60,13 +59,11 @@ module.exports = smw.wrap(smart(base, {
     }],
   },
   plugins: [
-    // new MiniCssExtractPlugin({
-    //   filename: 'css/[name].[contenthash].css', // name是代码码chunk的名字
-    // }),
-    // new BundleAnalyzerPlugin({
+    new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+    new BundleAnalyzerPlugin({
       // analyzerMode: 'disabled', // 不启动展示打包报告的http服务器
       // generateStatsFile: true, // 是否生成stats.json文件
-    // }), // 没有参数则使用默认配置
+    }), // 没有参数则使用默认配置
 
   ],
 }));

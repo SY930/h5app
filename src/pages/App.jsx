@@ -8,7 +8,7 @@ import zh_CN from 'antd/lib/locale-provider/zh_CN';
 import Spin from '../components/Spin';
 
 dayjs.locale('zh-cn')
-const Home = React.lazy(() => import(/*webpackPreload:true*/'./Home'));
+const Home = React.lazy(() => import(/*webpackPreload:true, webpackChunkName: "home" */'./Home'));
 
 class App extends Component {
   constructor() { // Component should be written as a pure functioneslint(react/prefer-stateless-function)
