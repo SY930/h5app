@@ -8,8 +8,6 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 // } = require('clean-webpack-plugin');
 // const webpack = require('webpack');
 const isProduction = process.env.NODE_ENV === 'production';
-const lessRegex = /\.less$/;
-const lessModuleRegex = /\.module\.less$/;
 module.exports = {
   entry: './src/index.jsx',
   output: {
@@ -17,93 +15,108 @@ module.exports = {
     filename: '[name].bundle-[contenthash].js',
   },
   optimization: {
-    removeAvailableModules: true, 
-    removeEmptyChunks: true, 
+    removeAvailableModules: true,
+    removeEmptyChunks: true,
     mergeDuplicateChunks: true,
   },
 
   resolve: {
-    extensions: ['.js', '.jsx', '.json', '.css'],
+    extensions: ['.js', '.jsx', '.json', '.css', 'less'],
   },
   module: {
     noParse: /jquery/,
     rules: [{
-      test: /\.(js|jsx)$/,
-      exclude: /node_modules/,
-      // ?cacheDirectory 表示传给 babel-loader 的参数，用于缓存 babel 编译结果加快重新编译速度
-      use: ['babel-loader?cacheDirectory'],
-      // use: 'babel-loader',
-    },
-    {
-      test: /\.css$/,
-      use: [
-        isProduction ? MiniCssExtractPlugin.loader : "style-loader",
-        {
-          loader: 'css-loader'
-        }
-      ]
-    },
-    {
-      test: /\.less$/,
-      use: [
-        isProduction ? MiniCssExtractPlugin.loader : "style-loader",
-        {
-          loader: 'css-loader',
-          options: {
-            // modules: true,
-            importLoaders: 0,
-            // modules: true,
-            // camelCase: true,
-            // localIdentName: '[name]_[local]__[hash:base64:5]',
-          },
-        },
-        {
-          loader: 'postcss-loader',
-          options: {
-            // parser: 'postcss-js',
-            plugins: [
-              require('autoprefixer'), // eslint-disable-line
-            ],
-            // cssModules: {
-            //   enable: true, // 默认为 false，如需使用 css modules 功能，则设为 true
-            //   config: {
-            //     namingPattern: 'module', // 转换模式，取值为 global/module，下文详细说明
-            //     generateScopedName: '[name]__[local]___[hash:base64:5]'
-            //   }
-            // }
-          },
-        },
-        // {
-        //   loader: 'px2rem-loader',//可以把px单位变成rem单位
-        //   options: {
-        //     remUnit: 75,//在标准设计稿下1rem对应的是75px
-        //     remPrecesion: 8 //计算后的小数精度是8位
-        //   }
-        // },
-        {
-          loader: 'less-loader',
-          options: {
-            modifyVars: {
-              'primary-color': '#1AB495',
-              'link-color': '#1AB495',
-              'border-radius-base': '4px',
-            },
-            javascriptEnabled: true,
-          },
-        },
-        // 'less-loader',
-      ],
-    },
-    {
-      test: /\.(ttf|svg|eot|woff|woff2|otf)/,
-      use: {
-        loader: 'url-loader',
+        test: /\.(js|jsx)$/,
+        exclude: /node_modules/,
+        // ?cacheDirectory 表示传给 babel-loader 的参数，用于缓存 babel 编译结果加快重新编译速度
+        use: ['babel-loader?cacheDirectory'],
+        // use: 'babel-loader',
       },
-    },
-    {
-      test: /\.(htm|html)$/,
-      loader: 'html-withimg-loader', // ，html中直接使用img标签src加载图片图片会被打包而且路径也处理妥当。npm -> 额外提供html的include子页面功能。
-    },
+      // 普通模式
+      {
+        test: new RegExp(`^(.*\\.global).*\\.css`),
+        use: [{
+            loader: 'style-loader'
+          },
+          {
+            loader: 'css-loader',
+          },
+          {
+            loader: 'postcss-loader'
+          }
+        ],
+        exclude: [path.resolve(__dirname, '..', 'node_modules')]
+      }, {
+        test: /\.(less|css)$/,
+        include: /node_modules/,
+        use: [
+          'style-loader',
+          {
+            loader: 'css-loader',
+            options: {
+              modules: false
+            }
+          },
+          {
+            loader: 'less-loader',
+            options: {
+              modifyVars: {
+                'primary-color': '#1AB495',
+                'link-color': '#1AB495',
+                'border-radius-base': '4px',
+              },
+              javascriptEnabled: true,
+            },
+          },
+        ],
+      },
+      {
+        test: /\.(less|css)$/,
+        exclude: /node_modules/,
+        use: [
+          isProduction ? MiniCssExtractPlugin.loader : "style-loader",
+          {
+            loader: 'css-loader',
+            options: {
+              modules: {
+                // mode: 'local',
+                localIdentName: isProduction ? "[hash:base64]" : "[path][name]__[local]--[hash:base64:5]",
+              },
+              importLoaders: 0,
+              // modules: true,
+              // camelCase: true,
+              // localIdentName: '[name]_[local]__[hash:base64:5]',
+            },
+          },
+          {
+            loader: 'postcss-loader',
+            options: {
+              // parser: 'postcss-js',
+              plugins: [
+                require('autoprefixer'), // eslint-disable-line
+              ],
+            },
+          },
+          // {
+          //   loader: 'px2rem-loader',//可以把px单位变成rem单位
+          //   options: {
+          //     remUnit: 75,//在标准设计稿下1rem对应的是75px
+          //     remPrecesion: 8 //计算后的小数精度是8位
+          //   }
+          // },
+          'less-loader',
+        ],
+      },
+      {
+        test: /\.(ttf|svg|eot|woff|woff2|otf)/,
+        use: {
+          loader: 'url-loader',
+        },
+      },
+      {
+        test: /\.(htm|html)$/,
+        loader: 'html-withimg-loader', // ，html中直接使用img标签src加载图片图片会被打包而且路径也处理妥当。npm -> 额外提供html的include子页面功能。
+      },
     ],
   },
   plugins: [

@@ -1,5 +1,27 @@
-import { useState, useEffect } from 'react';
+import { Modal } from 'antd';
 import fetch from 'isomorphic-fetch';
+
+export const throttle = (fn, delay, mustRunDelay) => {
+    let timer = null;
+    let start;
+    return () => {
+      const context = this;
+      const current = +new Date();
+      clearTimeout(timer);
+      if (!start) {
+        start = current;
+      }
+      if (current - start >= mustRunDelay) {
+        fn.apply(context);
+        start = current;
+      } else {
+        timer = setTimeout(() => {
+          fn.apply(context);
+        }, delay);
+      }
+    };
+  };
+  
 
 function getBodyParam(type, params) {
     if (type === 'JSON') return JSON.stringify(params);
@@ -24,7 +46,7 @@ function getQueryParam(params) {
     return p;
 }
 function getUrlParams(options) {
-    const { url, method, params = {}, type} = options;
+    const { url, method, type, ...params} = options;
     const _m = method.toUpperCase();
     const _t = type.toUpperCase();
     const getContentType = (type) => {
@@ -39,17 +61,18 @@ function getUrlParams(options) {
     return { url: _u, method: _m,  headers, ...body,}
 }
 
-function useRequest(url) {
-    let [options, setOptions] = useState({
-        method: "POST",
-        type: 'JSON',
-    });
-    let [data, setData] = useState({
-        totalPage: 0,
-        list: []
-    });
-    function getData() {
-        const {url, ...options} = getUrlParams(options);
+const fetchData = (url, options = {}) => {
+    // let [options, setOptions] = useState({
+    //     method: "POST",
+    //     type: 'JSON',
+    // });
+    const opt = {
+        method: 'POST', type: 'JSON',
+        url,
+        ...options,
+    }
+    const getData = () => new Promise((resolve, reject) => {
+        const {url, ...options} = getUrlParams({...opt});
         fetch(url, options)
             .then(response => {
                 if (response.ok) {
@@ -61,13 +84,25 @@ function useRequest(url) {
                 }
             })
             .then(result => {
-                if (result.success) {
-                    setData(result);
+                console.log('result: ', result);
+                if (result.code === '000') {
+                    resolve(result.data);
+                } else {
+                    Modal.error({
+                        title: '啊哦！好像有问题呦~~',
+                        content: `${result.msg}`,
+                    });
                 }
+            })
+            .catch((error) => {
+                console.log('error: ', error);
+                reject(error)
             });
-    }
-    useEffect(getData, [options, url]);
-    return [data,options, setOptions];
+    })
+    // useEffect(getData, [url]);
+    return getData();
 }
 
-export default useRequest;
+export {
+    fetchData
+} 

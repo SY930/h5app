@@ -25,7 +25,13 @@ module.exports = smw.wrap(smart(base, {
     host: 'localhost', // 支持 IP 访问
     compress: true,
     open: true,
-    proxy: {},
+    proxy: {
+      '/crm_h': {
+        target: 'http://dohko.shop.crm.api21.hualala.com',
+        changeOrigin: true,
+        host: 'http://dohko.shop.crm.api21.hualala.com',
+      }
+    },
     // historyApiFallback: {//因为我们可能会使用浏览器路由，刷新的时候需要重定向到根文件
     //   index: './index.html'
     // }

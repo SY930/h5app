@@ -1,5 +1,5 @@
 import React from "react";
-import './style.less'
+import styles from './style.less'
 // import { makeStyles } from '@material-ui/core/styles';
 // const load = keyframes`
 // 0%{
@@ -86,8 +86,8 @@ import './style.less'
 export default function Spin() {
     // const classes = useStyles();
     return (
-        <div className='loadingBox'>
-        <div className='loading'>
+        <div className={styles.loadingBox}>
+        <div className={styles.loading}>
         <span></span>
         <span></span>
         <span></span>
